@@ -1,7 +1,29 @@
-function handler(req: Request): Response {
-    return new Response("Hello, World!");
-}
+import { Application, Router, send } from "https://deno.land/x/oak/mod.ts";
 
-import { serve } from "https://deno.land/std@0.119.0/http/server.ts";
+const app = new Application();
 
-serve(handler);
+
+const router = new Router();
+
+router.get("/", async ctx => {
+  await send(ctx, "/", {
+    root: `${Deno.cwd()}/public`,
+    index: 'index.html'
+  });
+});
+
+router.get("/control", async ctx => {
+  await send(ctx, "control.html", {
+    root: `${Deno.cwd()}/public`,
+  });
+});
+
+router.get("/display", async ctx => {
+  await send(ctx, "display.html", {
+    root: `${Deno.cwd()}/public`,
+  });
+});
+
+await app.use(router.routes()).listen({ port: 8000 });
+
+function findScenes() {} 
