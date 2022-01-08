@@ -1,38 +1,46 @@
-import { Application, Router, send } from "https://deno.land/x/oak@v6.5.0/mod.ts";
+import router from './router.ts'
 
-import { viewEngine, engineFactory, adapterFactory } from "https://deno.land/x/view_engine@v1.5.0/mod.ts";
+const app = router();
 
-const app = new Application();
+const args = Deno.args.slice(0);
+if (!args.length || args.indexOf('--help') > -1) usage();
+while (args.length > 1) {
+  const arg = args.shift()!;
+  if (arg === '--init') {
+    const path = args.pop()!;
+    initScenesDirectory(path);
+  } else if (arg.startsWith('--')) {
+    console.log(`Unrecognized option ${arg}`);
+    usage();
+  } else {
+    usage();
+  }
+}
 
-const ejsEngine = engineFactory.getEjsEngine();
-const oakAdapter = adapterFactory.getOakAdapter();
+loadScenes(args[0]);
 
-app.use(viewEngine(oakAdapter, ejsEngine));
+function loadScenes(path: string) {
+  console.log(`loading from ${path}`);
+  let sceneDirectoryInfo: Deno.FileInfo;
+  try {
+    sceneDirectoryInfo = Deno.statSync(path);
+  } catch (e) {
+    console.error(e);
+    Deno.exit(1);
+  }
+  console.log(sceneDirectoryInfo);
+}
 
-const router = new Router();
+function initScenesDirectory(path: string): void {
+  console.log(`Init the scenes directory in ${path}`);
+  Deno.exit(0);
+}
 
-router.get("/control", async ctx => {
-  await send(ctx, "control.html", {
-    root: `${Deno.cwd()}/public`,
-  });
-});
-
-router.get("/display", async ctx => {
-  await send(ctx, "display.html", {
-    root: `${Deno.cwd()}/public`,
-  });
-});
-
-router.get("/", async ctx => {
-  ctx.render("public/index.ejs");
-});
-
-app.use(router.routes());
-
-app.use(async (ctx, next) => {
-  ctx.response.redirect('/');
-});
-
-await app.listen({ port: 8000 });
-
-function findScenes() {} 
+function usage() {
+  console.log('Usage: srscene [arguments] <path/to/scenes/folder>');
+  console.log();
+  console.log('Arguments:');
+  console.log('    --init      Initializes the scenes folder to hold scenes');
+  console.log('    --help      Displays this help message');
+  Deno.exit(0);
+}
