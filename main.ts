@@ -1,5 +1,7 @@
 import router from './router.ts'
 
+import { generateJSON } from './manifest.js'
+
 const app = router();
 
 const args = Deno.args.slice(0);
@@ -17,10 +19,7 @@ while (args.length > 1) {
   }
 }
 
-loadScenes(args[0]);
-
-function loadScenes(path: string) {
-  console.log(`loading from ${path}`);
+function getScenesDirectoryInfo(path: string) {
   let sceneDirectoryInfo: Deno.FileInfo;
   try {
     sceneDirectoryInfo = Deno.statSync(path);
@@ -28,11 +27,44 @@ function loadScenes(path: string) {
     console.error(e);
     Deno.exit(1);
   }
-  console.log(sceneDirectoryInfo);
+  if(!sceneDirectoryInfo.isDirectory) usage();
+  return sceneDirectoryInfo;
+}
+
+function getManifestInfo(path: string) {
+  let manifestInfo: Deno.FileInfo | null = null;
+  try {
+    manifestInfo = Deno.statSync(path);
+  } catch {
+  }
+  return manifestInfo || null;
+}
+
+function getManifestPath(scenesDirectoryPath: string) {
+  return `${scenesDirectoryPath}/manifest.json`;
+}
+  
+loadScenes(args[0]);
+
+function loadScenes(path: string) {
+  console.log(`Loading scenes from ${path}`);
+  const sceneDirectoryInfo = getScenesDirectoryInfo(path);
+  const manifestInfo = getManifestInfo(getManifestPath(path));
+  if (manifestInfo == null) {
+    console.log(`Directory ${path} is not initialized; run 'srscene --init ${path}' first`);
+    Deno.exit(1);
+  }
 }
 
 function initScenesDirectory(path: string): void {
-  console.log(`Init the scenes directory in ${path}`);
+  console.log(`Initializing the scenes directory in ${path}`);
+  const sceneDirectoryInfo = getScenesDirectoryInfo(path);
+  const manifestInfo = getManifestInfo(getManifestPath(path));
+  if (manifestInfo !== null) {
+    console.log(`Directory ${path} is already initialized; it already contains a manifest.json file`);
+    Deno.exit(1);
+  }
+  Deno.writeTextFileSync(`${path}/manifest.json`, generateJSON());
   Deno.exit(0);
 }
 

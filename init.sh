@@ -1,3 +1,3 @@
 #!/usr/bin/sh
 
-deno run --allow-net --allow-read main.ts --init scenes
+deno run --allow-net --allow-read --allow-write main.ts --init scenes
