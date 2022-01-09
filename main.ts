@@ -1,5 +1,5 @@
 import router from './router.ts'
-import { generateJSON, isValidManifest } from './manifest.ts'
+import { generateJSON, isValidManifest, loadManifest, loadedManifest } from './manifest.ts'
 import type { Manifest, Scene } from './manifest.ts'
 
 const app = router();
@@ -44,19 +44,6 @@ function getManifestPath(scenesDirectoryPath: string) {
   return `${scenesDirectoryPath}/manifest.json`;
 }
 
-function loadManifest(path: string): Manifest {
-  const manifest = JSON.parse(Deno.readTextFileSync(path));
-  if (!isValidManifest(manifest)) {
-    console.log('Invalid manifest!');
-    Deno.exit(1);
-  } else {
-    console.log('Valid manifest!!');
-  }
-  return manifest;
-}
-  
-loadScenes(args[0]);
-
 function loadScenes(path: string) {
   console.log(`Loading scenes from ${path}`);
   const sceneDirectoryInfo = getScenesDirectoryInfo(path);
@@ -66,9 +53,11 @@ function loadScenes(path: string) {
     console.log(`Directory ${path} is not initialized; run 'srscene --init ${path}' first`);
     Deno.exit(1);
   }
-  const manifest = loadManifest(manifestPath);
-  console.log(manifest);
+  loadManifest(manifestPath);
+  console.log(loadedManifest());
 }
+  
+loadScenes(args[0]);
 
 function initScenesDirectory(path: string): void {
   console.log(`Initializing the scenes directory in ${path}`);
