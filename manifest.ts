@@ -1,61 +1,40 @@
-const MANIFEST_VERSION = '1.0';
-
-function generateJSON() {
-  return `{
-  "version": "1.0",
-  "scenes": [
-  ]
-}`;
-}
-
-type Manifest = {
-  version: string,
-  scenes: Array<Scene>,
-}
-
 type Scene = {
   id: string,
-}
-
-let manifest: Manifest | null = null;
-
-function isValidManifest(manifest: Manifest | null): boolean {
-  return !!manifest
-      && !!manifest.version
-      && !!manifest.scenes
-      && (manifest.scenes.filter(isValidScene).length === manifest.scenes.length);
 }
 
 function isValidScene(scene: Scene): boolean {
   return !!scene.id;
 }
 
-function loadManifest(path: string): Manifest | null {
-  manifest = JSON.parse(Deno.readTextFileSync(path));
-  if (!isValidManifest(manifest)) {
-    console.log('Invalid manifest!');
-    Deno.exit(1);
-  } else {
-    console.log('Valid manifest!!');
-  }
-  return manifest;
+let scenes: Array<Scene> = [];
+
+function loadScenes(path: string) {
+  for (let s of Deno.readDirSync(path)) loadScene(`${path}/${s.name}`);
 }
 
-function loadedManifest(): Manifest | null {
-  return manifest;
+function getManifestPath(sceneDirPath: string) {
+  return `${sceneDirPath}/srscene.json`;
+}
+
+function loadScene(path: string) {
+  const sceneDirectoryInfo = Deno.statSync(path);
+  if (!sceneDirectoryInfo.isDirectory) return;
+  const manifestPath = getManifestPath(path);
+  const manifestInfo = Deno.statSync(manifestPath);
+  if (!manifestInfo.isFile) return;
+  const sceneData = Deno.readTextFileSync(manifestPath);
+  const scene = JSON.parse(sceneData);
+  if (isValidScene(scene)) scenes.push(scene);
 }
 
 function loadedScenes(): Array<Scene> {
-  return manifest ? manifest.scenes : [];
+  return scenes;
 }
 
 export {
-  generateJSON,
-  isValidManifest,
-  loadManifest,
-  loadedManifest,
+  loadScenes,
   loadedScenes,
 }
 
-export type { Manifest, Scene }
+export type { Scene }
 
