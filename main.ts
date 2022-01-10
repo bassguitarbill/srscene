@@ -17,7 +17,11 @@ while (args.length > 1) {
 }
   
 loadScenes(args[0]);
-console.log(loadedScenes());
+logLoadedScenes();
+
+function logLoadedScenes() {
+  loadedScenes().forEach(s => console.log(`Loaded scene ${s.id}`));
+}
 
 function usage() {
   console.log('Usage: srscene [arguments] <path/to/scenes/folder>');

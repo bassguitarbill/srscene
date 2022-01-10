@@ -26,8 +26,18 @@ async function init(): Promise<Application> {
     });
   });
 
+  router.post('/add-scene', async ctx => {
+    const body = await ctx.request.body({ type: 'form-data' })
+    const data = await body.value.read();
+    const filename = data.files![0].filename!;
+    const fileContents = await Deno.readTextFile(filename);
+    console.log(data);
+    console.log(fileContents);
+    ctx.response.redirect('/');
+  });
+
   router.get("/", async ctx => {
-    ctx.render("public/index.ejs", { data: { scenes: loadedScenes() } });
+    ctx.render("public/index.ejs", { scenes: loadedScenes() });
   });
 
   app.use(router.routes());

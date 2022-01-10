@@ -5,6 +5,7 @@
   <body>
     <h1>Hi!</h1>
     <p><%= Date.now() %></p>
-    <p><%= data.scenes.length %></p>
+    <%- include('templates/scene-list.ejs') %>
+    <%- include('templates/new-scene.ejs') %>
   </body>
 </html>
