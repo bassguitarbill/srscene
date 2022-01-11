@@ -8,23 +8,38 @@ function isValidScene(scene: Scene): boolean {
 
 let scenes: Array<Scene> = [];
 
-function loadScenes(path: string) {
-  for (let s of Deno.readDirSync(path)) loadScene(`${path}/${s.name}`);
+async function loadScenes(path: string): Promise<void> {
+  for await (const s of Deno.readDir(path)) {
+    await loadScene(`${path}/${s.name}`);
+  };
 }
 
-function getManifestPath(sceneDirPath: string) {
+function getManifestPath(sceneDirPath: string): string {
   return `${sceneDirPath}/srscene.json`;
 }
 
-function loadScene(path: string) {
-  const sceneDirectoryInfo = Deno.statSync(path);
-  if (!sceneDirectoryInfo.isDirectory) return;
-  const manifestPath = getManifestPath(path);
-  const manifestInfo = Deno.statSync(manifestPath);
-  if (!manifestInfo.isFile) return;
-  const sceneData = Deno.readTextFileSync(manifestPath);
-  const scene = JSON.parse(sceneData);
-  if (isValidScene(scene)) scenes.push(scene);
+async function loadScene(path: string) {
+  return Deno.stat(path).then((dirInfo: Deno.FileInfo) => {
+    return new Promise<string>((res, rej) => {
+      if (!dirInfo.isDirectory) rej(`${path} is not a directory`);
+      else res(getManifestPath(path));
+    });
+  })
+  .then(Deno.stat)
+  .then((manifestInfo: Deno.FileInfo) => {
+    return new Promise<string>((res, rej) => {
+      if (!manifestInfo.isFile) rej(`Invalid manifest file`);
+      else res(getManifestPath(path));
+    });
+  })
+  .then(Deno.readTextFile)
+  .then(sceneData => {
+    const scene = JSON.parse(sceneData);
+    if (isValidScene(scene)) return scene;
+    else throw `Invalid scene at ${path}`
+  })
+  .then(scene => scenes.push(scene))
+  .catch(console.log)
 }
 
 function loadedScenes(): Array<Scene> {

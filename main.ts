@@ -16,8 +16,7 @@ while (args.length > 1) {
   }
 }
   
-loadScenes(args[0]);
-logLoadedScenes();
+loadScenes(args[0]).then(() => logLoadedScenes());
 
 function logLoadedScenes() {
   loadedScenes().forEach(s => console.log(`Loaded scene ${s.id}`));
