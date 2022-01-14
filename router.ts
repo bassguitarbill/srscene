@@ -16,22 +16,22 @@ async function init(): Promise<Application> {
 
   const router = new Router();
 
-  router.get("/control", async ctx => {
-    await send(ctx, "control.html", {
-      root: `${Deno.cwd()}/public`,
-    });
-  });
-
-  router.get("/display", async ctx => {
-    await send(ctx, "display.html", {
-      root: `${Deno.cwd()}/public`,
-    });
-  });
-
   router.get("/:sceneId", async ctx => {
     const scene = fetchScene(ctx.params);
     if (!scene) ctx.response.redirect('/');
     else ctx.render("public/scene.ejs", { scene });
+  });
+
+  router.get("/:sceneId/control", async ctx => {
+    const scene = fetchScene(ctx.params);
+    if (!scene) ctx.response.redirect('/');
+    else ctx.render("public/control.ejs", { scene });
+  });
+
+  router.get("/:sceneId/display", async ctx => {
+    const scene = fetchScene(ctx.params);
+    if (!scene) ctx.response.redirect('/');
+    else ctx.render("public/display.ejs", { scene });
   });
 
   router.post('/add-scene', async ctx => {
