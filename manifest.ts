@@ -1,3 +1,6 @@
+import { ensureFile } from "https://deno.land/std@0.121.0/fs/mod.ts";
+import { scenesDirectory } from './main.ts';
+
 type Scene = {
   id: string,
 }
@@ -50,10 +53,20 @@ function getScene(sceneId: string): Scene | undefined {
   return scenes.find(s => s.id === sceneId);
 }
 
+async function addScene(scene: Scene) {
+  const { id } = scene;
+  const manifestFilePath = `${scenesDirectory}/${id}/srscene.json`;
+  await ensureFile(manifestFilePath);
+  await Deno.writeTextFile(manifestFilePath, JSON.stringify(scene));
+  scenes.push(scene);
+  console.log(`Added scene ${scene.id}`);
+}
+
 export {
   loadScenes,
   loadedScenes,
   getScene,
+  addScene
 }
 
 export type { Scene }

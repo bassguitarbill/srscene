@@ -15,8 +15,10 @@ while (args.length > 1) {
     usage();
   }
 }
+
+const scenesDirectory = args[0];
   
-loadScenes(args[0]).then(() => logLoadedScenes());
+loadScenes(scenesDirectory).then(() => logLoadedScenes());
 
 function logLoadedScenes() {
   loadedScenes().forEach(s => console.log(`Loaded scene ${s.id}`));
@@ -29,3 +31,5 @@ function usage() {
   console.log('    --help      Displays this help message');
   Deno.exit(0);
 }
+
+export { scenesDirectory }

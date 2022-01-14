@@ -1,7 +1,7 @@
 import { Application, Router, send, RouteParams } from "https://deno.land/x/oak@v6.5.0/mod.ts";
 import { viewEngine, engineFactory, adapterFactory } from "https://deno.land/x/view_engine@v1.5.0/mod.ts";
 
-import { loadedScenes, getScene } from './manifest.ts';
+import { loadedScenes, getScene, addScene } from './manifest.ts';
 
 import type { Scene } from './manifest.ts';
 
@@ -38,8 +38,13 @@ async function init(): Promise<Application> {
     const data = await body.value.read();
     const filename = data.files![0].filename!;
     const fileContents = await Deno.readTextFile(filename);
-    console.log(data);
-    console.log(fileContents);
+    const sceneJson = JSON.parse(fileContents);
+    const scene = getScene(sceneJson.id);
+    if (scene) {
+      console.log(`A scene with the id of ${sceneJson.id} already exists!`);
+    } else {
+      addScene(sceneJson);
+    }
     ctx.response.redirect('/');
   });
 
