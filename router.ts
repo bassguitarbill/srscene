@@ -1,8 +1,10 @@
-import { Application, Router, send } from "https://deno.land/x/oak@v6.5.0/mod.ts";
+import { Application, Router, send, RouteParams } from "https://deno.land/x/oak@v6.5.0/mod.ts";
 
 import { viewEngine, engineFactory, adapterFactory } from "https://deno.land/x/view_engine@v1.5.0/mod.ts";
 
-import { loadedScenes } from './manifest.ts';
+import { loadedScenes, getScene } from './manifest.ts';
+
+import type { Scene } from './manifest.ts';
 
 async function init(): Promise<Application> {
   const app = new Application();
@@ -24,6 +26,12 @@ async function init(): Promise<Application> {
     await send(ctx, "display.html", {
       root: `${Deno.cwd()}/public`,
     });
+  });
+
+  router.get("/:sceneId", async ctx => {
+    const scene = fetchScene(ctx.params);
+    if (!scene) ctx.response.redirect('/');
+    else ctx.render("public/scene.ejs", { scene });
   });
 
   router.post('/add-scene', async ctx => {
@@ -51,6 +59,12 @@ async function init(): Promise<Application> {
   return app;
 }
 
-function findScenes() {} 
+function fetchScene(params: RouteParams): Scene | undefined {
+  if (!params.sceneId) return undefined;
+  const scene = getScene(params.sceneId); 
+  if (!scene) return undefined;
+  return scene;
+}
+
 
 export default init;

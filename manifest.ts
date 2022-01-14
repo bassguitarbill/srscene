@@ -46,9 +46,14 @@ function loadedScenes(): Array<Scene> {
   return scenes;
 }
 
+function getScene(sceneId: string): Scene | undefined {
+  return scenes.find(s => s.id === sceneId);
+}
+
 export {
   loadScenes,
   loadedScenes,
+  getScene,
 }
 
 export type { Scene }

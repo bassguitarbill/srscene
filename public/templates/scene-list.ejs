@@ -1,5 +1,9 @@
 <div class="scene-list">
   <% scenes.forEach(scene => { %>
-    <div id="<%= scene.id %>"><%= scene.id %></div>
+    <div id="<%= scene.id %>">
+      <%- `<a href="/${scene.id}">${scene.id}</a>` %>
+      <%- `<a href="/${scene.id}/control">Control</a>` %>
+      <%- `<a href="/${scene.id}/display">Display</a>` %>
+    </div>
   <% }) %>
 </div>
