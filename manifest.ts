@@ -22,14 +22,15 @@ function getManifestPath(sceneDirPath: string): string {
 }
 
 async function loadScene(path: string) {
-  return Deno.stat(path).then((dirInfo: Deno.FileInfo) => {
+  return Deno.stat(path)
+  .then(dirInfo => {
     return new Promise<string>((res, rej) => {
       if (!dirInfo.isDirectory) rej(`${path} is not a directory`);
       else res(getManifestPath(path));
     });
   })
   .then(Deno.stat)
-  .then((manifestInfo: Deno.FileInfo) => {
+  .then(manifestInfo => {
     return new Promise<string>((res, rej) => {
       if (!manifestInfo.isFile) rej(`Invalid manifest file`);
       else res(getManifestPath(path));
@@ -41,6 +42,7 @@ async function loadScene(path: string) {
     if (isValidScene(scene)) return scene;
     else throw `Invalid scene at ${path}`
   })
+  .then(scene => { console.log(`Loaded scene ${scene.id}`); return scene; })
   .then(scene => scenes.push(scene))
   .catch(console.log)
 }
