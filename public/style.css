@@ -1,0 +1,22 @@
+/* 
+ * Color scheme: https://coolors.co/d8dbe2-a9bcd0-58a4b0-373f51-1b1b1e
+ */
+
+body {
+  background-color: #1B1B1E;
+  color: #D8DBE2;
+}
+
+a {
+  color: #58A4B0;
+}
+
+.header-bar {
+  background-color: #373F51;
+  border-radius: 15px;
+}
+
+.app-name {
+  color: #D8DBE2;
+  padding: 30px;
+}

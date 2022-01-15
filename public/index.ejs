@@ -1,9 +1,10 @@
 <html>
   <head>
     <title>--- SRScene ---</title>
+    <link rel="stylesheet" type="text/css" charset="utf-8" media="all" href="/public/style.css">
   </head>
   <body>
-    <h1>Hi!</h1>
+    <%- include('templates/header.ejs') %>
     <p><%= Date.now() %></p>
     <%- include('templates/scene-list.ejs') %>
     <%- include('templates/new-scene.ejs') %>

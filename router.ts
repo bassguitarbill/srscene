@@ -48,6 +48,13 @@ async function init(): Promise<Application> {
     ctx.response.redirect('/');
   });
 
+  router.get("/public/:something", async ctx => {
+    await send(ctx, ctx.request.url.pathname, {
+      root: `${Deno.cwd()}`,
+      index: "index.html",
+    });
+  });
+
   router.get("/", async ctx => {
     ctx.render("public/index.ejs", { scenes: loadedScenes() });
   });
