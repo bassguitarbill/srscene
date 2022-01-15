@@ -3,10 +3,12 @@ import { scenesDirectory } from './main.ts';
 
 type Scene = {
   id: string,
+  name: string,
 }
 
 function isValidScene(scene: Scene): boolean {
-  return !!scene.id;
+  return !!scene.id
+      && !!scene.name;
 }
 
 let scenes: Array<Scene> = [];
@@ -60,8 +62,12 @@ async function addScene(scene: Scene) {
   const manifestFilePath = `${scenesDirectory}/${id}/srscene.json`;
   await ensureFile(manifestFilePath);
   await Deno.writeTextFile(manifestFilePath, JSON.stringify(scene));
-  scenes.push(scene);
-  console.log(`Added scene ${scene.id}`);
+  if (isValidScene(scene)) {
+    scenes.push(scene);
+    console.log(`Added scene ${scene.id}`);
+  } else {
+    console.log(`Invalid Scene`);
+  }
 }
 
 export {
