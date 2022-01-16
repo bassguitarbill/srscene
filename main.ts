@@ -1,6 +1,9 @@
 import router from './router.ts'
 import { loadScenes, loadedScenes } from './manifest.ts';
-import type { Scene } from './manifest.ts'
+import State from './state.ts';
+
+import type { Scene } from './manifest.ts';
+import type { Param } from './state.ts';
 
 const app = router();
 
@@ -17,7 +20,7 @@ while (args.length > 1) {
 }
 
 const scenesDirectory = args[0];
-  
+ 
 loadScenes(scenesDirectory);
 
 function usage() {
