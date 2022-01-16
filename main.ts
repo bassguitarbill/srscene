@@ -1,6 +1,7 @@
 import router from './router.ts'
 import { loadScenes, loadedScenes } from './manifest.ts';
 import State from './state.ts';
+import OneShot from './oneshot.ts';
 
 import type { Scene } from './manifest.ts';
 import type { Param } from './state.ts';
